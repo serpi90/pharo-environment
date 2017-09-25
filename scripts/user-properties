@@ -1,0 +1,13 @@
+{
+  "author" : "JulianMaestri",
+  "fonts": {
+    "default": {
+      "name": "Source Sans Pro",
+      "size": 11
+    },
+    "code": {
+      "name": "Source Code Pro",
+      "size": 10
+    }
+  }
+}

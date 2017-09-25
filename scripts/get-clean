@@ -1,0 +1,73 @@
+#!/bin/bash
+
+if [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]
+then
+	PHARO_URL=get.pharo.org/64/
+else
+	PHARO_URL=get.pharo.org
+fi
+
+CACHE_FILE=clean-env.tgz
+
+while [[ $# -gt 0 ]]
+do
+	case "$1" in
+		--help)
+			echo '--help for this message'
+			echo "--fresh to ignore the cache file [$CACHE_FILE]"
+			echo '--clean just clean the environment'
+			echo '--run-save <path-to-script> run the provided script and save the image'
+			exit
+			;;
+		--fresh)
+			echo "Cleaning Cache"
+			rm -f "$CACHE_FILE"
+			;;
+		--clean)
+			DOWNLOAD=NO
+			;;
+		--run-save)
+			shift
+			FILE_TO_EXECUTE=$(readlink -e "$1")
+			;;
+		*)
+			# unknown option
+			;;
+	esac
+	shift # past argument or value
+done
+
+# Clean Environment
+echo "Cleaning Environment"
+find . -maxdepth 1 -not \( -name "." -o -name "$CACHE_FILE" -o -name "$(basename "$0")" -o -name "startup.st" -o -name "user-properties" \) -exec rm -rf {} \;
+
+if [ "$DOWNLOAD" != "NO" ]
+then
+	if [ -f "$CACHE_FILE" ]
+	then
+		echo "Restoring from Cache"
+		tar zxf "$CACHE_FILE"
+	else
+		echo "Downloading Pharo from $PHARO_URL"
+		if which curl > /dev/null
+		then curl "${PHARO_URL}" | bash
+		else wget -O - -q "${PHARO_URL}" | bash
+		fi
+
+		echo "Saving downloaded files to Cache"
+		tar zcf "$CACHE_FILE" --exclude="$CACHE_FILE" --exclude="$(basename "$0")" --exclude="startup.st" --exclude="user-properties" ./*
+	fi
+fi
+
+if [ ! -z "$FILE_TO_EXECUTE" ] && [ -f pharo ]
+then
+	echo "Executing $FILE_TO_EXECUTE"
+	./pharo Pharo.image eval """
+	$(cat "$FILE_TO_EXECUTE").
+	SmalltalkImage current
+		closeSourceFiles;
+		openSourceFiles;
+		snapshot: true andQuit: true
+	"""
+fi
+
