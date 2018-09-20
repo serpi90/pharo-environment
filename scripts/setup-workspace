@@ -1,0 +1,46 @@
+#!/bin/bash
+set -e
+
+if [ $# -lt 1 ]; then
+	echo "Usage: $0 <workspace-name> [extra arguments for get-clean]" 1>&2
+	exit -1
+fi
+
+# Prepare variables
+WORKSPACE_NAME=$1
+shift # remove workspace name to use $@ later when invoking get-clean
+WORKING_DIRECTORY="$(dirname "$(readlink --canonicalize "$0")")"
+WORKING_DIRECTORY="$(readlink --canonicalize "${WORKING_DIRECTORY}/../")"
+WORKSPACE_PATH="${WORKING_DIRECTORY}/${WORKSPACE_NAME}"
+
+# Ensure workspace does not already exist
+if [ -e "$WORKSPACE_PATH" ]; then
+	echo "Error: $WORKSPACE_PATH already exists" 2>&1
+	exit -1
+fi
+
+# Build the workspace
+mkdir --parents "$WORKSPACE_PATH"
+pushd "$WORKSPACE_PATH" > /dev/null
+for file in get-clean startup.st user-properties; do
+	ln --symbolic "../scripts/$file"
+done
+./get-clean "$@"
+popd > /dev/null
+
+SHORTCUT_FILE=~/Desktop/"${WORKSPACE_NAME}.desktop"
+
+# Create a desktop entry for the workspace
+echo "[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${WORKSPACE_NAME}
+Comment=Pharo Development Environment [${WORKSPACE_NAME}]
+Path=${WORKSPACE_PATH}
+Exec=${WORKSPACE_PATH}/pharo-ui
+Icon=${WORKING_DIRECTORY}/resources/Pharo.svg
+Terminal=false
+StartupNotify=false
+" > "$SHORTCUT_FILE"
+chmod u+x "$SHORTCUT_FILE"
+
