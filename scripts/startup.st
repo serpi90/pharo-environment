@@ -81,7 +81,7 @@
 
 		(StartupAction
 			name: 'Local Playground stash directory'
-			code: [ GTPlayBook stashDirectory: ((StartupContext at: #playground) at: #stash_directory) ]
+			code: [ GTPlayBook stashDirectory: ((userProperties at: #playground) at: #stash_directory) ]
 			runOnce: true).
 
 		(StartupAction
