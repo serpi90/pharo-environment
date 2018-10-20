@@ -64,6 +64,27 @@
 			runOnce: true).
 
 		(StartupAction
+			name: 'Enable Iceberg Metacello integration'
+			code: [ Iceberg enableMetacelloIntegration: true ]
+			runOnce: true).
+
+		(StartupAction
+			name: 'Set iceberg shared repository'
+			code: [ IceRepository shareRepositoriesBetweenImages: true.
+			IceRepository sharedRepositoriesLocationString: ((userProperties at: #iceberg) at: #shared_directory) ]
+			runOnce: true).
+
+		(StartupAction
+			name: 'Set Iceberg default code subdirectory'
+			code: [ IceRepository defaultCodeSubdirectory: ((userProperties at: #iceberg) at: #code_subdirectory) ]
+			runOnce: true).
+
+		(StartupAction
+			name: 'Local Playground stash directory'
+			code: [ GTPlayBook stashDirectory: ((StartupContext at: #playground) at: #stash_directory) ]
+			runOnce: true).
+
+		(StartupAction
 			name: 'Show any startup action errors'
 			code: [ StartupPreferencesLoader default errors ifNotEmpty: [ :errors | errors explore ] ]
 			runOnce: true).
