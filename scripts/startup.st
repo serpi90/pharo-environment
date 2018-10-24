@@ -18,8 +18,7 @@
 								GraphicFontSettings resetAllFontToDefault.
 								"It does weird things if we leave windowTitleFont bold but with same familyName and size so we use size + 1"
 								StandardFonts windowTitleFont: (LogicalFont familyName: (font at: #name) pointSize: (font at: #size) + 1) forceBold ].
-						fonts at: #code ifPresent: [ :font | StandardFonts codeFont: (LogicalFont familyName: (font at: #name) pointSize: (font at: #size)) ] ] ]
-			runOnce: true).
+						fonts at: #code ifPresent: [ :font | StandardFonts codeFont: (LogicalFont familyName: (font at: #name) pointSize: (font at: #size)) ] ] ]).
 
 		(StartupAction
 			name: 'Set up UI theme'
@@ -29,7 +28,8 @@
 		(StartupAction
 			name: 'Set up syntax highlighting style'
 			code: [ userProperties at: #sytaxTheme ifPresent: [ :theme | SHPreferences setStyleTableNamed: theme ] ]
-			runOnce: true).
+			runOnce: true).
+		(StartupAction			name: 'Set iceberg shared repository'			code: [ userProperties at: 'iceberg' ifPresent: [:icebergConfig |				icebergConfig					at: 'sharedDirectory' ifPresent: [:path | IceRepository shareRepositoriesBetweenImages: true; sharedRepositoriesLocationString: path ];					at: 'codeSubdirectory' ifPresent: [:path | IceRepository defaultCodeSubdirectory: path ] ] ]			runOnce: true).
 
 		(StartupAction
 			name: 'Debugger options'
