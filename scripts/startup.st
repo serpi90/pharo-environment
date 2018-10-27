@@ -28,8 +28,15 @@
 		(StartupAction
 			name: 'Set up syntax highlighting style'
 			code: [ userProperties at: #sytaxTheme ifPresent: [ :theme | SHPreferences setStyleTableNamed: theme ] ]
-			runOnce: true).
-		(StartupAction			name: 'Set iceberg shared repository'			code: [ userProperties at: 'iceberg' ifPresent: [:icebergConfig |				icebergConfig					at: 'sharedDirectory' ifPresent: [:path | IceRepository shareRepositoriesBetweenImages: true; sharedRepositoriesLocationString: path ];					at: 'codeSubdirectory' ifPresent: [:path | IceRepository defaultCodeSubdirectory: path ] ] ]			runOnce: true).
+			runOnce: true).
+
+		(StartupAction
+			name: 'Set iceberg shared repository'
+			code: [ userProperties at: 'iceberg' ifPresent: [:icebergConfig |
+				icebergConfig
+					at: 'sharedDirectory' ifPresent: [:path | IceRepository shareRepositoriesBetweenImages: true; sharedRepositoriesLocationString: path ];
+					at: 'codeSubdirectory' ifPresent: [:path | IceRepository defaultCodeSubdirectory: path ] ] ]
+			runOnce: true).
 
 		(StartupAction
 			name: 'Debugger options'
@@ -69,4 +76,4 @@
 			runOnce: true).
 
 }
-] value
+] value.
