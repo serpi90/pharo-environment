@@ -18,10 +18,12 @@ while [[ $# -gt 0 ]]; do
 			FILES_TO_EXECUTE+=("$(readlink -e "$1")")
 			;;
 		*)
+			echo "Usage: $0 <opts> <*.st>" 1>&2
+			echo "Any smalltalk file will be evaluated after loading the clean image, save the image." 1>&2
+			echo '--clean just clean the environment' 1>&2
+			echo '--force-32 force use of 32 bit pharo on 64 bit systems' 1>&2
 			echo '--help for this message' 1>&2
 			echo "--fresh to ignore the cache file [$CACHE_FILE]" 1>&2
-			echo '--clean just clean the environment' 1>&2
-			echo '--run-save <path-to-script> run the provided script and save the image' 1>&2
 			exit -1
 			;;
 	esac
