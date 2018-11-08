@@ -78,7 +78,7 @@
 		(StartupAction
 			name: 'Set Iceberg default code subdirectory'
 			code: [ 
-				IceLibgetRepository defaultCodeSubdirectory: ((userProperties at: #iceberg) at: #code_subdirectory) ]
+				IceLibgitRepository defaultCodeSubdirectory: ((userProperties at: #iceberg) at: #code_subdirectory) ]
 			runOnce: true).
 
 		(StartupAction
