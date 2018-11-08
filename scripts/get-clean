@@ -8,6 +8,9 @@ while [[ $# -gt 0 ]]; do
 		--force-32)
 			PHARO_URL=get.pharo.org
 			;;
+		--force-alpha)
+			ALPHA=YES
+			;;
 		--fresh)
 			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
 			;;
@@ -21,6 +24,7 @@ while [[ $# -gt 0 ]]; do
 			echo '--help for this message' 1>&2
 			echo "--fresh to ignore the cache file [$CACHE_FILE]" 1>&2
 			echo '--clean just clean the environment' 1>&2
+			echo '--alpha force alpha version' 1>&2
 			echo '--run-save <path-to-script> run the provided script and save the image' 1>&2
 			exit -1
 			;;
@@ -29,7 +33,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$PHARO_URL" ] && [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]; then
-	PHARO_URL=get.pharo.org/64/
+	if [ "$ALPHA" == "YES" ]; then
+		PHARO_URL=get.pharo.org/64/alpha+vm
+	else
+		PHARO_URL=get.pharo.org/64/
+	fi
 else
 	PHARO_URL=get.pharo.org
 fi
