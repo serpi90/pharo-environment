@@ -70,13 +70,15 @@
 
 		(StartupAction
 			name: 'Set iceberg shared repository'
-			code: [ IceRepository shareRepositoriesBetweenImages: true.
-			IceRepository sharedRepositoriesLocationString: ((userProperties at: #iceberg) at: #shared_directory) ]
+			code: [ 
+				IceLibgitRepository shareRepositoriesBetweenImages: true.
+				IceLibgitRepository sharedRepositoriesLocationString: ((userProperties at: #iceberg) at: #shared_directory) ]
 			runOnce: true).
 
 		(StartupAction
 			name: 'Set Iceberg default code subdirectory'
-			code: [ IceRepository defaultCodeSubdirectory: ((userProperties at: #iceberg) at: #code_subdirectory) ]
+			code: [ 
+				IceLibgitRepository defaultCodeSubdirectory: ((userProperties at: #iceberg) at: #code_subdirectory) ]
 			runOnce: true).
 
 		(StartupAction
