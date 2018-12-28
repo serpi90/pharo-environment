@@ -6,12 +6,12 @@ declare -a FILES_TO_EXECUTE=
 function print_usage {
 	echo "Usage: $0 [options] [script.st] [script2.st] ...
 Where options can any combination of:
-	--alpha same as --release=alpha+vm
-	--clean dont download just clean the environment (this includes the image and changes)
-	--force-32 force 32 bit version (default is os architecture)
-	--fresh to ignore the cache file [$CACHE_FILE]
-	--release=<release> will download the indicated release, default is stable+vm
-	--help for this message
+  --alpha             same as --release=alpha+vm
+  --clean             don't download. just clean the environment (this removes image and changes)
+  --force-32          force 32 bit version (default is os architecture)
+  --fresh             ignore the cache file [$CACHE_FILE], redownload
+  --release=<release> download <release>, default is stable+vm
+  --help              this message
 
 Any argument ending with .st will be read as a file, evaluated and then save the image.
 Files are evaluated in order of appearance.
