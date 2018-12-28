@@ -3,42 +3,64 @@
 CACHE_FILE=clean-env.tgz
 declare -a FILES_TO_EXECUTE=
 
+function print_usage {
+	echo "Usage: $0 [options] [script.st] [script2.st] ...
+Where options can any combination of:
+	--alpha same as --release=alpha+vm
+	--clean dont download just clean the environment (this includes the image and changes)
+	--force-32 force 32 bit version (default is os architecture)
+	--fresh to ignore the cache file [$CACHE_FILE]
+	--release=<release> will download the indicated release, default is stable+vm
+	--help for this message
+
+Any argument ending with .st will be read as a file, evaluated and then save the image.
+Files are evaluated in order of appearance.
+" 1>&2
+	exit -1
+}
+
 while [[ $# -gt 0 ]]; do
 	case "$1" in
-		--force-32)
-			PHARO_URL=get.pharo.org
-			;;
-		--force-alpha)
+		--alpha)
 			RELEASE=alpha+vm
-			;;
-		--fresh)
-			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
+			echo "Using release $RELEASE"
 			;;
 		--clean)
 			DOWNLOAD=NO
 			;;
+		--force-32)
+			PHARO_URL=get.pharo.org
+			;;
+		--fresh)
+			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
+			;;
+		--release=*)
+			RELEASE=${1##--release=}
+			echo "Using release $RELEASE"
+			;;
 		*.st)
 			FILES_TO_EXECUTE+=("$(readlink -e "$1")")
 			;;
+		--help)
+			print_usage
+			;;
 		*)
-			echo '--help for this message' 1>&2
-			echo "--fresh to ignore the cache file [$CACHE_FILE]" 1>&2
-			echo '--clean just clean the environment' 1>&2
-			echo '--alpha force alpha version' 1>&2
-			echo '--run-save <path-to-script> run the provided script and save the image' 1>&2
-			exit -1
+			echo "Unrecognized option $1"
+			print_usage
 			;;
 	esac
 	shift
 done
 
-if [ -z "$PHARO_URL" ] && [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]; then
-	PHARO_URL=get.pharo.org/64
-else
-	PHARO_URL=get.pharo.org
+if [ -z "$PHARO_URL" ]; then
+	if [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]; then
+		PHARO_URL=get.pharo.org/64
+	else
+		PHARO_URL=get.pharo.org
+	fi
 fi
 
-PHARO_URL="${PHARO_URL}/${RELEASE}"
+RELEASE_URL="${PHARO_URL}/${RELEASE:-stable+vm}"
 
 # Clean Environment
 echo "Cleaning Environment"
@@ -49,11 +71,11 @@ if [ "$DOWNLOAD" != "NO" ]; then
 		echo "Restoring from Cache"
 		tar --gzip --extract --file "$CACHE_FILE"
 	else
-		echo "Downloading Pharo from $PHARO_URL"
+		echo "Downloading Pharo from $RELEASE_URL"
 		if which curl > /dev/null; then
-		   	curl --fail --silent --show-error --location "${PHARO_URL}" | bash
+		   	curl --fail --silent --show-error --location "${RELEASE_URL}" | bash
 		else
-			wget --output-document - --quiet "${PHARO_URL}" | bash
+			wget --output-document - --quiet "${RELEASE_URL}" | bash
 		fi
 
 		echo "Saving downloaded files to Cache"
