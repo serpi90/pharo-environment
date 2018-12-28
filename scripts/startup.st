@@ -74,14 +74,14 @@
 			name: 'Configure Iceberg'
 			code: [
 				Iceberg enableMetacelloIntegration: true.
-				userProperties at: #iceberg ifPresent: [:iceberg |
-					iceberg
+				userProperties at: #iceberg ifPresent: [:config | | iceberg |
+					iceberg := SystemVersion current major < 7 ifTrue: [IceRepository] ifFalse: [IceLibgitRepository].
+					config
 						at: #shared_directory ifPresent: [:directory |
-							IceLibgitRepository
+							iceberg
 								shareRepositoriesBetweenImages: true;
-								sharedRepositoriesLocationString: directory) ];
-						at: #code_subdirectory ifPresent: [:directory |
-							IceLibgitRepository defaultCodeSubdirectory: directory ] ] ] ]
+								sharedRepositoriesLocationString: directory];
+						at: #code_subdirectory ifPresent: [:directory | iceberg defaultCodeSubdirectory: directory ] ] ]
 			runOnce: true).
 
 		(StartupAction
