@@ -71,6 +71,27 @@
 			runOnce: true).
 
 		(StartupAction
+			name: 'Configure Iceberg'
+			code: [
+				Iceberg enableMetacelloIntegration: true.
+				userProperties at: #iceberg ifPresent: [:iceberg |
+					iceberg
+						at: #shared_directory ifPresent: [:directory |
+							IceLibgitRepository
+								shareRepositoriesBetweenImages: true;
+								sharedRepositoriesLocationString: directory) ];
+						at: #code_subdirectory ifPresent: [:directory |
+							IceLibgitRepository defaultCodeSubdirectory: directory ] ] ] ]
+			runOnce: true).
+
+		(StartupAction
+			name: 'Configure Playground'
+			code: [
+				userProperties at: #playground ifPresent: [:playground | 
+					playground at: #stash_directory ifPresent: [:directory | GTPlayBook stashDirectory: directory ] ] ]
+			runOnce: true).
+
+		(StartupAction
 			name: 'Show any startup action errors'
 			code: [ StartupPreferencesLoader default errors ifNotEmpty: [ :errors | errors explore ] ]
 			runOnce: true).
