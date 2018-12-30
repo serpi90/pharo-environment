@@ -1,6 +1,6 @@
 {
-  "author" : "JulianMaestri",
-  "~theme" : "PharoLightTheme",
+  "author" : "fortizpenaloza",
+  "theme" : "PharoLightTheme",
   "fonts": {
     "default": {
       "name": "Source Sans Pro",
@@ -12,10 +12,10 @@
     }
   },
   "iceberg" : {
-    "~shared_directory" : "../repos",
+    "shared_directory" : "../repos",
     "code_subdirectory" : "source"
   },
-  "~playground" : {
+  "playground" : {
     "stash_directory" : "/Users/patchinko/Development/github/playground_stash"
   }
 }
