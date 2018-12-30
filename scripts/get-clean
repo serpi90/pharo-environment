@@ -9,7 +9,7 @@ while [[ $# -gt 0 ]]; do
 			PHARO_URL=get.pharo.org
 			;;
 		--force-alpha)
-			ALPHA=YES
+			RELEASE=alpha+vm
 			;;
 		--fresh)
 			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
@@ -33,14 +33,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$PHARO_URL" ] && [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]; then
-	if [ "$ALPHA" == "YES" ]; then
-		PHARO_URL=get.pharo.org/64/alpha+vm
-	else
-		PHARO_URL=get.pharo.org/64/
-	fi
+	PHARO_URL=get.pharo.org/64
 else
 	PHARO_URL=get.pharo.org
 fi
+
+PHARO_URL="${PHARO_URL}/${RELEASE}"
 
 # Clean Environment
 echo "Cleaning Environment"

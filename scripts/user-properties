@@ -1,5 +1,6 @@
 {
   "author" : "fortizpenaloza",
+  "theme" : "PharoLightTheme",
   "fonts": {
     "default": {
       "name": "Source Sans Pro",
