@@ -16,7 +16,7 @@ Where options can any combination of:
 Any argument ending with .st will be read as a file, evaluated and then save the image.
 Files are evaluated in order of appearance.
 " 1>&2
-	exit -1
+	exit 1
 }
 
 while [[ $# -gt 0 ]]; do
@@ -72,7 +72,7 @@ if [ "$DOWNLOAD" != "NO" ]; then
 		tar --gzip --extract --file "$CACHE_FILE"
 	else
 		echo "Downloading Pharo from $RELEASE_URL"
-		if which curl > /dev/null; then
+		if curl -v > /dev/null; then
 		   	curl --fail --silent --show-error --location "${RELEASE_URL}" | bash
 		else
 			wget --output-document - --quiet "${RELEASE_URL}" | bash
@@ -85,7 +85,7 @@ fi
 
 if [ -f pharo ]; then
 	for script in "${FILES_TO_EXECUTE[@]}"; do
-		if [ ! -z "$script" ]; then
+		if [ -n "$script" ]; then
 			echo "Executing $script"
 			./pharo Pharo.image eval """
 			$(cat "$script").
