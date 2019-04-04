@@ -1,6 +1,6 @@
-workspace/clean-env\.tgz
-workspace/pharo
-workspace/pharo-ui
-workspace/pharo-vm
-workspace/Pharo\.changes
-workspace/Pharo\.image
+!repos/README.md
+!workspace/get-clean
+!workspace/startup.st
+!workspace/user-properties
+repos/*
+workspace/*
