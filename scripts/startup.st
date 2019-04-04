@@ -76,6 +76,7 @@
 				Iceberg enableMetacelloIntegration: true.
 				userProperties at: #iceberg ifPresent: [:config | | iceberg |
 					iceberg := SystemVersion current major < 7 ifTrue: [IceRepository] ifFalse: [IceLibgitRepository].
+					iceberg reset.
 					config
 						at: #shared_directory ifPresent: [:directory |
 							iceberg
