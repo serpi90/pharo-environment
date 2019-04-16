@@ -103,13 +103,7 @@ if [ -f pharo ]; then
 	for script in "${FILES_TO_EXECUTE[@]}"; do
 		if [ -n "$script" ]; then
 			echo "Executing $script"
-			./pharo Pharo.image eval """
-			$(cat "$script").
-			SmalltalkImage current
-			closeSourceFiles;
-			openSourceFiles;
-			snapshot: true andQuit: true
-			"""
+			./pharo Pharo.image eval --save "$(cat "$script")"
 		fi
 	done
 fi
