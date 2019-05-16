@@ -1,16 +1,6 @@
 {
   "author" : "JulianMaestri",
   "theme" : "PharoDarkTheme",
-  "fonts": {
-    "default": {
-      "name": "Source Sans Pro",
-      "size": 10
-    },
-    "code": {
-      "name": "Source Code Pro",
-      "size": 11
-    }
-  },
   "iceberg" : {
     "code_subdirectory" : "source"
   }
