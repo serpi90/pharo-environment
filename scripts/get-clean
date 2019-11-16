@@ -7,94 +7,103 @@ function print_usage {
 	echo "Usage: $0 [options] [script.st] [script2.st] ...
 Where options can any combination of:
   --alpha             same as --release=alpha+vm
-  --clean             don't download. just clean the environment (this removes image and changes)
   --force-32          force 32 bit version (default is os architecture)
   --fresh             ignore the cache file [$CACHE_FILE], redownload
-  --release=<release> download <release>, default is stable+vm
   --help              this message
+  --release=<release> download <release>, default is stable+vm
+  --save-only         save current workspace to cache
 
 Any argument ending with .st will be read as a file, evaluated and then save the image.
 Files are evaluated in order of appearance.
-" 1>&2
-	exit -1
+"
 }
+
+# Set defaults
+FETCH=YES         # Download or restore from cache by default
+RELEASE=stable+vm
+SAVE=NO           # Only save after downloading a fresh environment
 
 while [[ $# -gt 0 ]]; do
 	case "$1" in
 		--alpha)
 			RELEASE=alpha+vm
-			echo "Using release $RELEASE"
-			;;
-		--clean)
-			DOWNLOAD=NO
 			;;
 		--force-32)
 			PHARO_URL=get.pharo.org
 			;;
 		--fresh)
-			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
+			echo "Cleaning Cache" && rm --force "$CACHE_FILE"
+			;;
+		--help)
+			print_usage
+			exit 0
 			;;
 		--release=*)
 			RELEASE=${1##--release=}
-			echo "Using release $RELEASE"
+			;;
+		--save-only)
+			FETCH=NO
+			SAVE=YES
 			;;
 		*.st)
 			FILES_TO_EXECUTE+=("$(readlink -e "$1")")
 			;;
-		--help)
-			print_usage
-			;;
 		*)
 			echo "Unrecognized option $1"
-			print_usage
+			print_usage 1>&2
+			exit 1
 			;;
 	esac
 	shift
 done
 
-if [ -z "$PHARO_URL" ]; then
-	if [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]; then
-		PHARO_URL=get.pharo.org/64
-	else
-		PHARO_URL=get.pharo.org
-	fi
+# Clean Environment
+if [ "$SAVE" != "YES" ]; then
+	echo "Cleaning Environment"
+	find . -maxdepth 1 -not \( -name "." -o -name "$CACHE_FILE" -o -name "$(basename "$0")" -o -name "startup.st" -o -name "user-properties" \) -exec rm --recursive --force {} \+
 fi
 
-RELEASE_URL="${PHARO_URL}/${RELEASE:-stable+vm}"
-
-# Clean Environment
-echo "Cleaning Environment"
-find . -maxdepth 1 -not \( -name "." -o -name "$CACHE_FILE" -o -name "$(basename "$0")" -o -name "startup.st" -o -name "user-properties" \) -exec rm -rf {} \;
-
-if [ "$DOWNLOAD" != "NO" ]; then
+# Download or restore from cache
+if [ "$FETCH" != "NO" ]; then
 	if [ -f "$CACHE_FILE" ]; then
 		echo "Restoring from Cache"
 		tar --gzip --extract --file "$CACHE_FILE"
 	else
-		echo "Downloading Pharo from $RELEASE_URL"
-		if which curl > /dev/null; then
-		   	curl --fail --silent --show-error --location "${RELEASE_URL}" | bash
-		else
-			wget --output-document - --quiet "${RELEASE_URL}" | bash
-		fi
+		# Autodetect architecture
+		if [ -z "$PHARO_URL" ]; then
+			if [ "$(uname -m)" == "x86_64" ] && [ "$(uname -s | head -c 5)" != "MINGW" ]; then
+				PHARO_URL=get.pharo.org/64
+				echo "Autodetected 64 bit version"
+			else
+				PHARO_URL=get.pharo.org
+				echo "Autodetected 32 bit version"
+			fi
+			fi
+			RELEASE_URL="$PHARO_URL/$RELEASE"
 
-		echo "Saving downloaded files to Cache"
-		tar --gzip --create --file "$CACHE_FILE" --exclude="$CACHE_FILE" --exclude="$(basename "$0")" --exclude="startup.st" --exclude="user-properties" ./*
+		echo "Using release $RELEASE"
+		echo "Downloading Pharo from $RELEASE_URL"
+		if curl --version > /dev/null; then
+		   	curl --fail --silent --show-error --location "$RELEASE_URL" | bash
+		else
+			wget --output-document - --quiet "$RELEASE_URL" | bash
+		fi
+		SAVE=YES
 	fi
 fi
 
+# Cache / save save environtment
+if [ "$SAVE" == "YES" ]; then
+	echo "Saving to Cache"
+	tar --gzip --create --file "$CACHE_FILE" --exclude="$CACHE_FILE" --exclude="$(basename "$0")" --exclude="startup.st" --exclude="user-properties" ./*
+fi
+
+# Execute scripts
 if [ -f pharo ]; then
 	for script in "${FILES_TO_EXECUTE[@]}"; do
-		if [ ! -z "$script" ]; then
+		if [ -n "$script" ]; then
 			echo "Executing $script"
-			./pharo Pharo.image eval """
-			$(cat "$script").
-			SmalltalkImage current
-			closeSourceFiles;
-			openSourceFiles;
-			snapshot: true andQuit: true
-			"""
+			./pharo Pharo.image eval --save "$(cat "$script")"
 		fi
 	done
 fi
-
