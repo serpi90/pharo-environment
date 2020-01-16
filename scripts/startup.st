@@ -11,6 +11,11 @@
       runOnce: true).
 
     (StartupAction
+      name: 'Set fulscreen status'
+      code: [ userProperties at: #fullscreen ifPresent: [ :boolean | Display fullscreenOff; fullscreen: boolean ] ]
+      runOnce: false).
+
+    (StartupAction
       name: 'Setup fonts'
       code: [ userProperties at: #fonts ifPresent: [ :fonts |
             fonts at: #default ifPresent: [ :font |
