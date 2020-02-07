@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
 			PHARO_URL=get.pharo.org
 			;;
 		--fresh)
-			echo "Cleaning Cache" && rm --force "$CACHE_FILE"
+			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
 			;;
 		--help)
 			print_usage
@@ -60,7 +60,7 @@ done
 # Clean Environment
 if [ "$SAVE" != "YES" ]; then
 	echo "Cleaning Environment"
-	find . -maxdepth 1 -not \( -name "." -o -name "$CACHE_FILE" -o -name "$(basename "$0")" -o -name "startup.st" -o -name "user-properties" \) -exec rm --recursive --force {} \+
+	find . -maxdepth 1 -not \( -name "." -o -name "$CACHE_FILE" -o -name "$(basename "$0")" -o -name "startup.st" -o -name "user-properties" \) -exec rm -rf {} \+
 fi
 
 # Download or restore from cache
