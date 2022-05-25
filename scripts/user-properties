@@ -12,10 +12,6 @@
     }
   },
   "iceberg" : {
-    "shared_directory" : "../repos",
     "code_subdirectory" : "source"
-  },
-  "playground" : {
-    "stash_directory" : "/Users/patchinko/Development/github/playground_stash"
   }
 }

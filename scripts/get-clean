@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
 			PHARO_URL=get.pharo.org
 			;;
 		--fresh)
-			echo "Cleaning Cache" && rm -f "$CACHE_FILE"
+			echo "Cleaning Cache" && rm --force "$CACHE_FILE"
 			;;
 		--help)
 			print_usage
