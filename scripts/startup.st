@@ -51,6 +51,7 @@
     (StartupAction
       name: 'Code formatting options BA-ST guidelines'
       code: [
+		"https://github.com/ba-st/Community/blob/main/docs/CodingStandards.md"
         SystemVersion current major >= 9
           ifTrue: [
             EFFormatter
